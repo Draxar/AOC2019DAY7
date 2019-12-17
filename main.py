@@ -1,4 +1,5 @@
-#input from stdin
+from itertools import permutations
+
 #inputProgram = list(map(int,input().split(",")))
 #hardcoded input
 inputProgram = [3,8,1001,8,10,8,105,1,0,0,21,46,67,76,101,118,199,280,361,442,99999,3,9,1002,9,4,9,1001,9,2,9,102,3,9,9,101,3,9,9,102,2,9,9,4,9,99,3,9,1001,9,3,9,102,2,9,9,1001,9,2,9,1002,9,3,9,4,9,99,3,9,101,3,9,9,4,9,99,3,9,1001,9,2,9,1002,9,5,9,101,5,9,9,1002,9,4,9,101,5,9,9,4,9,99,3,9,102,2,9,9,1001,9,5,9,102,2,9,9,4,9,99,3,9,1002,9,2,9,4,9,3,9,1002,9,2,9,4,9,3,9,101,2,9,9,4,9,3,9,101,1,9,9,4,9,3,9,102,2,9,9,4,9,3,9,102,2,9,9,4,9,3,9,1002,9,2,9,4,9,3,9,101,1,9,9,4,9,3,9,102,2,9,9,4,9,3,9,101,2,9,9,4,9,99,3,9,101,1,9,9,4,9,3,9,1002,9,2,9,4,9,3,9,102,2,9,9,4,9,3,9,101,1,9,9,4,9,3,9,101,2,9,9,4,9,3,9,102,2,9,9,4,9,3,9,101,2,9,9,4,9,3,9,102,2,9,9,4,9,3,9,1002,9,2,9,4,9,3,9,101,2,9,9,4,9,99,3,9,1001,9,1,9,4,9,3,9,1002,9,2,9,4,9,3,9,1002,9,2,9,4,9,3,9,101,1,9,9,4,9,3,9,102,2,9,9,4,9,3,9,1001,9,1,9,4,9,3,9,1002,9,2,9,4,9,3,9,1001,9,1,9,4,9,3,9,101,1,9,9,4,9,3,9,101,2,9,9,4,9,99,3,9,1002,9,2,9,4,9,3,9,1001,9,1,9,4,9,3,9,101,2,9,9,4,9,3,9,101,2,9,9,4,9,3,9,102,2,9,9,4,9,3,9,102,2,9,9,4,9,3,9,102,2,9,9,4,9,3,9,102,2,9,9,4,9,3,9,101,1,9,9,4,9,3,9,1001,9,2,9,4,9,99,3,9,102,2,9,9,4,9,3,9,102,2,9,9,4,9,3,9,101,2,9,9,4,9,3,9,101,1,9,9,4,9,3,9,101,2,9,9,4,9,3,9,1001,9,2,9,4,9,3,9,1001,9,2,9,4,9,3,9,101,2,9,9,4,9,3,9,1002,9,2,9,4,9,3,9,101,2,9,9,4,9,99]
@@ -33,11 +34,11 @@ class compu:
     else:
       ind1 = self.program[itr+1]
     if code == 3:
-      inp = 5 #only input for this part of task
-      self.program[ind1] = inp
+      print(self.inputBuffer)
+      self.program[ind1] = self.inputBuffer.pop(0)
       return 2
     if code == 4:
-      print(str(self.program[ind1]))
+      self.outputBuffer.append(self.program[ind1])
       return 2
     # 2 parameters  
     if p2 == 1:
@@ -96,6 +97,30 @@ class compu:
         process = False
       else :
         itr += move
+    return self.outputBuffer
 
-c1 = compu(inputProgram,list())
-c1.prepereAndProcess()
+
+# main
+answer = 0
+phase_inp = [4,3,2,1,0]
+# try all permutations of phases
+perm = permutations(phase_inp) 
+for i in list(perm): 
+  phase = list(i)
+  buf = list()
+  ret = [0]
+  iter = 0
+  for i in range(5):
+    buf.append(phase.pop())
+    buf.append(ret.pop())
+    c1 = compu(inputProgram,buf)
+    ret = c1.prepereAndProcess()
+    buf.clear()
+  tempa = ret.pop()
+  print(tempa)
+  if answer < tempa:
+    answer = tempa
+
+print("--ANSWER--")
+print(answer)
+print("----------")
