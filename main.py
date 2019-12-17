@@ -9,7 +9,11 @@ class compu:
     self.program = list(prog)
     self.inputBuffer = list(inp)
     self.outputBuffer = list()
+    self.state = 1 #1=new, 2=ended, 3=paused
+    self.itr = 0
 
+  def addInput(self, inp):
+    self.inputBuffer.extend(inp)
 
   def parseCode(self, code):
     p3 = int(code / 10000)
@@ -34,7 +38,8 @@ class compu:
     else:
       ind1 = self.program[itr+1]
     if code == 3:
-      print(self.inputBuffer)
+      if not self.inputBuffer:
+        return "pause"
       self.program[ind1] = self.inputBuffer.pop(0)
       return 2
     if code == 4:
@@ -84,42 +89,58 @@ class compu:
     return "quit"
 
   # prepere and process program
-  def prepereAndProcess(self):
+  def ProcessProgram(self):
     #prep program
-    itr = 0
     move = 0
     process = True
-
     #process program
     while process:
-      move = self.processCode(itr)
+      move = self.processCode(self.itr)
       if move == "quit":
+        self.state = 2
+        self.itr = 0
+        process = False
+      elif move == "pause":
+        self.state = 3
         process = False
       else :
-        itr += move
-    return self.outputBuffer
+        self.itr += move
+    return self.state, self.outputBuffer
 
 
 # main
 answer = 0
-phase_inp = [4,3,2,1,0]
+phase_inp = [5,6,7,8,9]
 # try all permutations of phases
 perm = permutations(phase_inp) 
 for i in list(perm): 
   phase = list(i)
   buf = list()
+  computers = list()
   ret = [0]
   iter = 0
   for i in range(5):
     buf.append(phase.pop())
     buf.append(ret.pop())
-    c1 = compu(inputProgram,buf)
-    ret = c1.prepereAndProcess()
+    com = compu(inputProgram,buf)
+    state, ret = com.ProcessProgram()
+    computers.append(com)
     buf.clear()
+  finished = 0
+  mod = 0
+  while finished < 5:
+    computers[mod%5].addInput(ret)
+    ret.clear()
+    state, ret = computers[mod%5].ProcessProgram()
+    mod+=1
+    if state == 2:
+      finished += 1
+
   tempa = ret.pop()
   print(tempa)
   if answer < tempa:
     answer = tempa
+  
 
 print("--ANSWER--")
 print(answer)
